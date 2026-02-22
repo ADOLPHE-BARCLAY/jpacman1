@@ -5,8 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import nl.tudelft.jpacman.level.Player;
 
@@ -14,7 +13,7 @@ import nl.tudelft.jpacman.level.Player;
  * A panel consisting of a column for each player, with the numbered players on
  * top and their respective scores underneath.
  *
- * @author Jeroen Roosen 
+ * @author Jeroen Roosen
  *
  */
 public class ScorePanel extends JPanel {
@@ -28,6 +27,11 @@ public class ScorePanel extends JPanel {
      * The map of players and the labels their scores are on.
      */
     private final Map<Player, JLabel> scoreLabels;
+
+    /**
+     * The map of players and the labels their lives are on.
+     */
+    private final Map<Player, JLabel> LivesLabels;
 
     /**
      * The default way in which the score is shown.
@@ -50,7 +54,7 @@ public class ScorePanel extends JPanel {
         super();
         assert players != null;
 
-        setLayout(new GridLayout(2, players.size()));
+        setLayout(new GridLayout(3, players.size()));
 
         for (int i = 1; i <= players.size(); i++) {
             add(new JLabel("Player " + i, JLabel.CENTER));
@@ -61,12 +65,27 @@ public class ScorePanel extends JPanel {
             scoreLabels.put(player, scoreLabel);
             add(scoreLabel);
         }
+        LivesLabels = new LinkedHashMap<>();
+        for (Player player : players) {
+            JLabel livesLabel = new JLabel(" Lives: "+ Integer.toString(player.getLives()), JLabel.CENTER);
+            LivesLabels.put(player, livesLabel);
+            add(livesLabel);
+        }
     }
 
     /**
      * Refreshes the scores of the players.
+     * Refreshes the lives of the players.
      */
     protected void refresh() {
+        for (Map.Entry<Player, JLabel> entry : LivesLabels.entrySet()) {
+            Player player = entry.getKey();
+            JLabel livesLabel = entry.getValue();
+            livesLabel.setText("Lives: "+Integer.toString(player.getLives()));
+            if (!player.isAlive()) {
+                livesLabel.setText("No more lives!");
+            }
+        }
         for (Map.Entry<Player, JLabel> entry : scoreLabels.entrySet()) {
             Player player = entry.getKey();
             String score = "";
