@@ -14,10 +14,7 @@ import nl.tudelft.jpacman.sprite.Sprite;
  */
 public class Player extends Unit {
 
-    /**
-     * The amount of points accumulated by this player.
-     */
-    private int score;
+    private final PlayerScore playerScore = new PlayerScore();
 
     /**
      * The animations for every direction.
@@ -28,14 +25,12 @@ public class Player extends Unit {
      * The animation that is to be played when Pac-Man dies.
      */
     private final AnimatedSprite deathSprite;
+    private final PlayerLife playerLife = new PlayerLife();
 
     /**
      * <code>true</code> iff this player is alive.
      */
-    private boolean alive;
-
-    private final int livesMax =3;
-    private int lives;
+//    private boolean alive;
 
     /**
      * {@link Unit} iff this player died by collision, <code>null</code> otherwise.
@@ -51,12 +46,9 @@ public class Player extends Unit {
      *            The sprite to be shown when this player dies.
      */
     protected Player(Map<Direction, Sprite> spriteMap, AnimatedSprite deathAnimation) {
-        this.score = 0;
-        this.alive = true;
-        this.lives = livesMax;
         this.sprites = spriteMap;
         this.deathSprite = deathAnimation;
-        deathSprite.setAnimating(false);
+        this.deathSprite.setAnimating(false);
     }
 
     /**
@@ -67,19 +59,10 @@ public class Player extends Unit {
      * @return <code>true</code> iff the player is alive.
      */
     public boolean isAlive() {
-        return lives>0;
 
+        return playerLife.isAlive();
     }
-    public void loseLife() {
-        if (lives > 0) {
-            lives--;
-        }
-        setAlive(lives>0);
 
-    }
-    public int lives() {
-        return lives;
-    }
 
     /**
      * Sets whether this player is alive or not.
@@ -93,19 +76,15 @@ public class Player extends Unit {
         if (isAlive) {
             deathSprite.setAnimating(false);
             this.killer = null;
-        }
-        if (!isAlive && lives>0) {
-            this.loseLife();
-        }
+        }else{
+            playerLife.loseLife();
 
-        if (!isAlive) {
             deathSprite.restart();
         }
-        this.alive = isAlive;
     }
 
     public int getLives() {
-        return lives;
+        return playerLife.getLives();
     }
 
     /**
@@ -132,12 +111,12 @@ public class Player extends Unit {
      * @return The amount of points accumulated by this player.
      */
     public int getScore() {
-        return score;
+        return playerScore.getScore();
     }
 
     @Override
     public Sprite getSprite() {
-        if (isAlive()) {
+        if (playerLife.isAlive()) {
             return sprites.get(getDirection());
         }
         return deathSprite;
@@ -151,6 +130,6 @@ public class Player extends Unit {
      *            has.
      */
     public void addPoints(int points) {
-        score += points;
+        playerScore.addPoints(points);
     }
 }
